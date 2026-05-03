@@ -1,12 +1,16 @@
-# UE5 GestureRecorder Plugin (v1.1 - MediaPipe Optimized)
+# UE5 GestureRecorder Plugin (v1.2 - Infinite File Streaming)
 
 **GestureRecorder** is a lightweight, independent Unreal Engine 5 (UE5) plugin designed to track the joint movements of a Character's Skeletal Mesh and record them in real-time as high-quality CSV data for Machine Learning (AI) model training.
 
-This version is **highly optimized for MediaPipe compatibility**. It automatically maps Unreal Engine's complex skeletal structure into MediaPipe's standard landmark naming convention to prevent the "Curse of Dimensionality" during AI training.
+This version is highly optimized for MediaPipe compatibility and introduces a **newly engineered File Streaming architecture (v1.2)** to support massive dataset collection without memory limitations.
 
-## Key Features & v1.1 Updates
+## What's New in v1.2?
 
-* **Dynamic MediaPipe Mapping:** Maps UE5 bone names (e.g., `head`, `upperarm_r`) directly to MediaPipe landmark names (e.g., `nose`, `right_shoulder`).
+* **Infinite File Streaming (OOM Safe):** Completely replaced the legacy RAM-based array storage with a direct-to-disk `FArchive` streaming architecture. You can now safely record hundreds of thousands of frames (e.g., 24/7 continuous recording) with a near-zero RAM footprint, completely eliminating Out-Of-Memory (OOM) crashes.
+
+## Key Features
+
+* **Dynamic MediaPipe Mapping (v1.1):** Automatically maps UE5 bone names (e.g., `head`, `upperarm_r`) directly to MediaPipe standard landmark names (e.g., `nose`, `right_shoulder`) to prevent the "Curse of Dimensionality" during AI training.
 * **Independent & Lightweight:** Operates using only default UE5 modules without heavy third-party dependencies.
 * **Real-time AI Preprocessing:** Extracts relative coordinates using the **Pelvis as the origin (0,0,0)**.
 * **Auto-Scale Normalization:** Automatically converts Unreal Engine's default scale (cm) into the AI training standard (m) by applying a 0.01 multiplier.
@@ -30,8 +34,8 @@ Once attached to a Character Blueprint, you can configure the mapping in the det
 * **Normalize Scale:** The ratio used for meter conversion (Default: `0.01`).
 
 ### Blueprint Nodes
-* `StartRecording()`: Begins the data recording process and dynamically generates the CSV header based on the target bones.
-* `StopRecording()`: Ends the recording and generates the CSV file in the `Saved/GestureData/` directory.
+* `StartRecording()`: Begins the data recording process, dynamically generates the CSV header based on the target bones, and opens the file stream.
+* `StopRecording()`: Safely closes the file stream and finalizes the CSV file in the `Saved/GestureData/` directory.
 * `UpdateGestureInfo(String Name, Int Count)`: Real-time update of the current gesture's name and its repetition count (ground truth label).
 
 ## Output Data Format (CSV)
